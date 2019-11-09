@@ -4,18 +4,23 @@
 *  作者：jiayu.qiu
 *  使用方法：在根项目的build.gradle中增加如下代码，进行导入：
 *  ext{
-*    sxGradleHome = "https://raw.githubusercontent.com/sxfad/gradle-scripts/master/"
+*    sxGradleHome = "http://192.168.120.68/root/gradle-scripts/raw/master/"
 *  }
 *  apply from: sxGradleHome + 'spring-cloud.gradle'
 *  
-*  更多内容，请参考 https://github.com/sxfad/gradle-scripts
+*  更多内容，请参考 http://192.168.120.68/root/gradle-scripts
 **/
 // 重要：java plugin 说明：https://docs.gradle.org/current/userguide/java_plugin.html
+
 apply plugin: 'java'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'idea'
+apply plugin: "com.gorylenko.gradle-git-properties"
 
+gitProperties {
+  keys = ['git.branch', 'git.closest.tag.commit.count', 'git.closest.tag.name', 'git.commit.id', 'git.commit.id.abbrev', 'git.commit.id.describe', 'git.commit.message.full', 'git.commit.message.short', 'git.commit.time', 'git.commit.user.email', 'git.commit.user.name', 'git.remote.origin.url', 'git.tags', 'git.total.commit.count']
+}
 
 if (JavaVersion.current().isJava8Compatible()) {
     allprojects {
@@ -25,6 +30,8 @@ if (JavaVersion.current().isJava8Compatible()) {
         }
     }
 }
+// println "springCloudVersion:${springCloudVersion}"
+// println "springBootVersion:${springBootVersion}"
 // 导入Spring Cloud 依赖
 dependencyManagement {
   imports {
@@ -43,13 +50,18 @@ dependencyManagement {
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
+springBoot  {
+  buildInfo ()
+}
+
 bootJar {
   // 默认只打普通jar包
   enabled = false
 }
+
 //默认情况下，当`bootJar`或`bootWar`任务配置时，`jar`或者`war` 任务被禁用。通过启用`jar`或`war`任务，可以将项目配置为同时构建可执行jar或者war
 jar {
-	enabled = true
+    enabled = true
 }
 
 // 打包源代码，为了方便查看源码及调试，把源码也上传到nexus仓库中
